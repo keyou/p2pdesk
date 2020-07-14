@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "json-over-tcp": "^0.3.2",
+    "keysym": "0.0.6",
     "robotjs": "^0.6.0",
     "x11": "^2.3.0"
   }

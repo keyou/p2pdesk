@@ -1,6 +1,7 @@
 
 var x11 = require('x11');
 var jot = require('json-over-tcp');
+var keysym = require('keysym');
 
 var spawn = require('child_process').spawn;
 
@@ -20,6 +21,21 @@ client.on('data', function (data) {
   console.log("data: " + JSON.stringify(data));
 });
 
+var ks = x11.keySyms;
+var ks2Name = {};
+for (var key in ks)
+    ks2Name[ ks[key].code ] = key;
+var kk2Name = {};
+
+var Modifiers = {
+  17:'shift',
+  20:'control',
+  24:'alt',
+  21:['shift','control'],
+  25:['shift','alt'],
+  28:['control','alt'],
+};
+
 function crateWindow() {
 
   x11.createClient(function (err, display) {
@@ -38,7 +54,9 @@ function crateWindow() {
           x11.eventMask.StructureNotify |
           x11.eventMask.PointerMotion |
           x11.eventMask.ButtonPress |
-          x11.eventMask.ButtonRelease
+          x11.eventMask.ButtonRelease |
+          x11.eventMask.KeyPress |
+          x11.eventMask.KeyRelease
       } // other parameters
     );
     X.MapWindow(wid);
@@ -56,9 +74,23 @@ function crateWindow() {
     //   '--vd-lavc-threads=1',
     //   'tcp://192.168.78.132:13333']);
 
+    var X = display.client;
+    var min = display.min_keycode;
+    var max = display.max_keycode;
+    X.GetKeyboardMapping(min, max - min, function (err, list) {
+      for (var i = 0; i < list.length; ++i) {
+        var name = kk2Name[i + min] = [];
+        var sublist = list[i];
+        for (var j = 0; j < sublist.length; ++j)
+          name.push([ks2Name[sublist[j]], sublist[j]]);
+      }
+    });
+
+    var index = 0;
+
     var mpid;
     X.on('event', function (ev) {
-      console.log("event: ", ev);
+      // console.log(index++ + " event: ", ev);
       try {
         if (ev.name == 'CreateNotify')
           mpid = ev.wid;
@@ -83,13 +115,42 @@ function crateWindow() {
           console.log(JSON.stringify(data));
           client.write(data);
         }
-        if((ev.name == 'ButtonPress') && (ev.keycode >= 4 && ev.keycode <= 5)) {
+        if ((ev.name == 'ButtonPress') && (ev.keycode >= 4 && ev.keycode <= 5)) {
           let data = {
             type: 'scroll',
             // button: ev.keycode == 4 ? 'left' : ev.keycode == 2 ? 'middle' : 'right',
             // state: ev.name == 'ButtonPress' ? 'down' : 'up',
             x: 0,
-            y: ev.keycode == 4? '10':'-10'
+            y: ev.keycode == 4 ? '5' : '-5'
+          };
+          console.log(JSON.stringify(data));
+          client.write(data);
+        }
+        if (ev.name == 'KeyPress' || ev.name == 'KeyRelease') {
+          var keySyms = kk2Name[ev.keycode];
+          // console.log(keySyms);
+          var shift = ev.buttons == 17;// || ev.buttons == 18; // capslock
+          var control = ev.buttons == 20;
+          var alt = ev.buttons == 24;
+          let name = '';
+          if(keySyms) {
+            var code = keysym.fromKeysym(keySyms[shift ? 1 : 0][1]);
+            if(code === undefined) {
+              code = keysym.fromKeysym(keySyms[0][1]);
+            }
+            if(code) {
+              name = code.names[0].toLowerCase().replace(/_l|_r/,'');
+            }
+            if(name == 'return') name = 'enter';
+            if(name == 'prior') name = 'pageup';
+            if(name == 'next') name = 'pagedown';
+            if(name == 'grave') name = '`';
+          }
+          let data = {
+            type: 'keyboard',
+            key: name,
+            state: ev.name == 'KeyPress' ? 'down' : 'up',
+            modifier: Modifiers[ev.buttons]
           };
           console.log(JSON.stringify(data));
           client.write(data);
@@ -101,5 +162,6 @@ function crateWindow() {
     });
   });
 }
+
 
 crateWindow();
