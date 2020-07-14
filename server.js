@@ -18,7 +18,6 @@ server.on('connection',(client) => {
     console.log('client disconnected');
   });
   client.on('data', (data) => {
-    console.log(JSON.stringify(data));
     try {      
       if(data.type == 'move') robot.moveMouse(data.x,data.y);
       if(data.type == 'button') robot.mouseToggle(data.state,data.button);
@@ -31,6 +30,7 @@ server.on('connection',(client) => {
       // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
       // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
     } catch (error) {
+      console.log(JSON.stringify(data));
       console.error(error);
     }
   });
