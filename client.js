@@ -29,11 +29,46 @@ var kk2Name = {};
 
 var Modifiers = {
   17:'shift',
+  1:'shift',
   20:'control',
+  4:'control',
   24:'alt',
+  8:'alt',
   21:['shift','control'],
+  5:['shift','control'],
   25:['shift','alt'],
+  9:['shift','alt'],
   28:['control','alt'],
+  12:['control','alt'],
+};
+
+var KeyMaps = {
+  return: 'enter',
+  prior: 'pageup',
+  next: 'pagedown',
+  num_lock: '',
+  caps_lock: '',
+  grave: '`',
+  comma:',',
+  less:',',
+  period:'.',
+  greater:'.',
+  slash:'/',
+  question:'/',
+  semicolon:';',
+  colon:';',
+  apostrophe:'\'',
+  quotedbl:'\'',
+  backslash:'\\',
+  bar:'\\',
+  bracketleft:'[',
+  braceleft:'[',
+  bracketright:']',
+  braceright:']',
+  minus:'-',
+  underscore:'-',
+  equal:'=',
+  plus:'=',
 };
 
 function crateWindow() {
@@ -61,7 +96,7 @@ function crateWindow() {
     );
     X.MapWindow(wid);
     console.log('wid: ', wid);
-    // mpv --wid=106954753 --no-cache --untimed --no-demuxer-thread --vd-lavc-threads=1 tcp://192.168.78.132:13333 --no-input-cursor --no-input-default-bindings --no-config
+    // mpv --wid=106954753 --no-cache --untimed --no-demuxer-thread --vd-lavc-threads=1 tcp://192.168.78.132:13333 --no-input-cursor --no-input-default-bindings --no-config --input-vo-keyboard=no
     // var mplayer = spawn('mpv', [
     //   '--wid', wid,
     //   '--no-config',
@@ -90,7 +125,7 @@ function crateWindow() {
 
     var mpid;
     X.on('event', function (ev) {
-      // console.log(index++ + " event: ", ev);
+      console.log(index++ + " event: ", ev);
       try {
         if (ev.name == 'CreateNotify')
           mpid = ev.wid;
@@ -139,18 +174,16 @@ function crateWindow() {
               code = keysym.fromKeysym(keySyms[0][1]);
             }
             if(code) {
-              name = code.names[0].toLowerCase().replace(/_l|_r/,'');
+              name = code.names[0].toLowerCase().replace(/_l$|_r$/,'');
             }
-            if(name == 'return') name = 'enter';
-            if(name == 'prior') name = 'pageup';
-            if(name == 'next') name = 'pagedown';
-            if(name == 'grave') name = '`';
+            if(KeyMaps[name]!=undefined) name = KeyMaps[name];
           }
+          if(name.length <=0) return;
           let data = {
             type: 'keyboard',
             key: name,
             state: ev.name == 'KeyPress' ? 'down' : 'up',
-            modifier: Modifiers[ev.buttons]?'':''
+            modifier: Modifiers[ev.buttons]
           };
           console.log(JSON.stringify(data));
           client.write(data);
