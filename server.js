@@ -3,6 +3,8 @@ var x11 = require('x11');
 var robot = require('robotjs');
 var jot = require('json-over-tcp');
 
+var spawn = require('child_process').spawn;
+
 robot.setMouseDelay(1);
 robot.setKeyboardDelay(1);
 
@@ -12,22 +14,22 @@ server.on('error', (err) => {
   throw err;
 });
 
-server.on('connection',(client) => {
+server.on('connection', (client) => {
   console.log('client connected');
   client.on('end', () => {
     console.log('client disconnected');
   });
   client.on('data', (data) => {
     try {
-      if(data.type!='move')
+      if (data.type != 'move')
         console.log(JSON.stringify(data));
-      if(data.type == 'move') robot.moveMouse(data.x,data.y);
-      if(data.type == 'button') robot.mouseToggle(data.state,data.button);
-      if(data.type == 'scroll') robot.scrollMouse(data.x,data.y);
-      if(data.type == 'keyboard') {
-        if(data.modifier && String(data.modifier).length > 0)
-          robot.keyToggle(data.key,data.state,data.modifier);
-        else robot.keyToggle(data.key,data.state);
+      if (data.type == 'move') robot.moveMouse(data.x, data.y);
+      if (data.type == 'button') robot.mouseToggle(data.state, data.button);
+      if (data.type == 'scroll') robot.scrollMouse(data.x, data.y);
+      if (data.type == 'keyboard') {
+        if (data.modifier && String(data.modifier).length > 0)
+          robot.keyToggle(data.key, data.state, data.modifier);
+        else robot.keyToggle(data.key, data.state);
       }
       // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
       // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
@@ -40,6 +42,42 @@ server.on('connection',(client) => {
 server.listen(13334, () => {
   console.log('server start');
 });
+
+// ffmpeg -f x11grab -s 1920x1080 -framerate 30 -i :0.0 -preset ultrafast -pix_fmt yuv420p -vcodec libx264 -tune zerolatency -b:v 900k -threads 1 -g 120 -listen 1 -fflags nobuffer -f h264 tcp://0.0.0.0:13333?tcp_nodelay
+
+
+
+var ffmpeg = spawn('ffmpeg', [
+  '-f',
+  'x11grab',
+  '-s',
+  '1920x1080',
+  '-framerate',
+  '30',
+  '-i',
+  ':0.0',
+  '-preset',
+  'ultrafast',
+  '-pix_fmt',
+  'yuv420p',
+  '-vcodec',
+  'libx264',
+  '-tune',
+  'zerolatency',
+  '-b:v',
+  '900k',
+  '-threads',
+  '1',
+  '-g',
+  '120',
+  '-listen',
+  '1',
+  '-fflags',
+  'nobuffer',
+  '-f',
+  'h264',
+  'tcp://0.0.0.0:13333?tcp_nodelay'
+]);
 
 return;
 var Exposure = x11.eventMask.Exposure;

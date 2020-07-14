@@ -125,7 +125,8 @@ function crateWindow() {
 
     var mpid;
     X.on('event', function (ev) {
-      console.log(index++ + " event: ", ev);
+      // if(ev.name !='MotionNotify' && ev.name != 'ConfigureNotify')
+      //   console.log(index++ + " event: ", ev); 
       try {
         if (ev.name == 'CreateNotify')
           mpid = ev.wid;
@@ -144,8 +145,8 @@ function crateWindow() {
             type: 'button',
             button: ev.keycode == 1 ? 'left' : ev.keycode == 2 ? 'middle' : 'right',
             state: ev.name == 'ButtonPress' ? 'down' : 'up',
-            x: ev.x * 1920 / w,
-            y: ev.y * 1080 / h
+            x: Math.round(ev.x * 1920 / w),
+            y: Math.round(ev.y * 1080 / h)
           };
           console.log(JSON.stringify(data));
           client.write(data);
