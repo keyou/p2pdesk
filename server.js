@@ -1,30 +1,30 @@
 
 var x11 = require('x11');
-var net = require('net');
 var robot = require('robotjs');
+var jot = require('json-over-tcp');
 
-const server = net.createServer((client) => {
-  // 'connection' listener.
+const server = jot.createServer();
+
+server.on('error', (err) => {
+  throw err;
+});
+
+server.on('connection',(client) => {
   console.log('client connected');
   client.on('end', () => {
     console.log('client disconnected');
   });
-  client.on('data', (chunk) => {
-    console.log(chunk.toString());
-    let data = JSON.parse(chunk.toString());
+  client.on('data', (data) => {
+    console.log(JSON.stringify(data));
     if(data.type == 'move') robot.moveMouse(data.x,data.y);
     if(data.type == 'button') robot.mouseToggle(data.state,data.button);
     // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
     // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
   });
-  // client.write('hello\r\n');
-  // client.pipe(client);
 });
-server.on('error', (err) => {
-  throw err;
-});
+
 server.listen(13334, () => {
-  console.log('server bound');
+  console.log('server start');
 });
 
 return;

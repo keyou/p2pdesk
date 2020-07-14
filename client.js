@@ -1,24 +1,23 @@
 
 var x11 = require('x11');
+var jot = require('json-over-tcp');
 
 var spawn = require('child_process').spawn;
 
-const net = require('net');
-const client = net.createConnection({ port: 13334 }, ()=>{
-  // 'connect' listener.
+var client = jot.createConnection({ host: /*'192.168.78.132'*/'127.0.0.1',port: 13334 }, function(){
   console.log('connected to server!');
-  //   client.write('world!\r\n');
 });
 
-client.on('data', (data) => {
-  console.log(data.toString());
-  //   client.end();
+client.on('end',()=>{
+  console.log("disconnected");
 });
-client.on('end', () => {
-  console.log('disconnected from server');
+
+client.on('error',(err)=>{
+  console.log(err);
 });
-client.on('error', (err) => {
-  console.error(err);
+
+client.on('data', function(data){
+  console.log("data: " + JSON.stringify(data));
 });
 
 function crateWindow() {
@@ -56,19 +55,19 @@ function crateWindow() {
           X.ResizeWindow(mpid, ev.width, ev.height);
         }
         if (ev.name == 'MotionNotify' && ev.wid == wid) {
-          let data = JSON.stringify({ type: 'move', x: ev.x * 1920 / w, y: ev.y * 1080 / h });
-          console.log(data);
+          let data = { type: 'move', x: ev.x * 1920 / w, y: ev.y * 1080 / h };
+          console.log(JSON.stringify(data));
           client.write(data);
         }
         if ((ev.name == 'ButtonPress' || ev.name == 'ButtonRelease') && (ev.keycode >= 1 || ev.keycode <= 3)) {
-          let data = JSON.stringify({
+          let data = {
             type: 'button',
             button: ev.keycode == 1 ? 'left' : ev.keycode == 2 ? 'middle' : 'right',
             state: ev.name == 'ButtonPress' ? 'down' : 'up',
             x: ev.x * 1920 / w,
             y: ev.y * 1080 / h
-          });
-          console.log(data);
+          };
+          console.log(JSON.stringify(data));
           client.write(data);
         }
       } catch (err) {
