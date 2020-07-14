@@ -19,7 +19,8 @@ server.on('connection',(client) => {
   });
   client.on('data', (data) => {
     try {
-      console.log(JSON.stringify(data));
+      if(data.type!='move')
+        console.log(JSON.stringify(data));
       if(data.type == 'move') robot.moveMouse(data.x,data.y);
       if(data.type == 'button') robot.mouseToggle(data.state,data.button);
       if(data.type == 'scroll') robot.scrollMouse(data.x,data.y);
