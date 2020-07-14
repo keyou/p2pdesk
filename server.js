@@ -1,10 +1,7 @@
 
 var x11 = require('x11');
-var x11_node = require("node-x11");
 var net = require('net');
 var robot = require('robotjs');
-
-// x11_node.init();
 
 const server = net.createServer((client) => {
   // 'connection' listener.
@@ -15,16 +12,10 @@ const server = net.createServer((client) => {
   client.on('data', (chunk) => {
     console.log(chunk.toString());
     let data = JSON.parse(chunk.toString());
-    if(data.type == 'move') {robot.moveMouse(data.x,data.y);
+    if(data.type == 'move') robot.moveMouse(data.x,data.y);
     if(data.type == 'button') robot.mouseToggle(data.state,data.button);
     // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
     // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
-    
-    // x11_node.mouseMove(d.x, d.y);
-    // x11_node.mouseMove(200, 500);
-    // x11_node.mouseButton(1,false);
-    // x11_node.mouseButton(3,false);
-    // x11_node.mouseButton(1,false);
   });
   // client.write('hello\r\n');
   // client.pipe(client);
@@ -36,8 +27,7 @@ server.listen(13334, () => {
   console.log('server bound');
 });
 
-
-
+return;
 var Exposure = x11.eventMask.Exposure;
 var PointerMotion = x11.eventMask.PointerMotion;
 
