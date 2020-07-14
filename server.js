@@ -18,17 +18,21 @@ server.on('connection',(client) => {
     console.log('client disconnected');
   });
   client.on('data', (data) => {
-    // console.log(JSON.stringify(data));
-    if(data.type == 'move') robot.moveMouse(data.x,data.y);
-    if(data.type == 'button') robot.mouseToggle(data.state,data.button);
-    if(data.type == 'scroll') robot.scrollMouse(data.x,data.y);
-    if(data.type == 'keyboard') {
-      if(String(data.modifier).length > 0)
-        robot.keyToggle(data.key,data.state,data.modifier);
-      else robot.keyToggle(data.key,data.state);
+    console.log(JSON.stringify(data));
+    try {      
+      if(data.type == 'move') robot.moveMouse(data.x,data.y);
+      if(data.type == 'button') robot.mouseToggle(data.state,data.button);
+      if(data.type == 'scroll') robot.scrollMouse(data.x,data.y);
+      if(data.type == 'keyboard') {
+        if(String(data.modifier).length > 0)
+          robot.keyToggle(data.key,data.state,data.modifier);
+        else robot.keyToggle(data.key,data.state);
+      }
+      // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
+      // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
+    } catch (error) {
+      console.error(error);
     }
-    // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
-    // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
   });
 });
 
