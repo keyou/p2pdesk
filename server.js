@@ -3,6 +3,8 @@ var x11 = require('x11');
 var robot = require('robotjs');
 var jot = require('json-over-tcp');
 
+robot.setMouseDelay(0);
+
 const server = jot.createServer();
 
 server.on('error', (err) => {
@@ -15,9 +17,10 @@ server.on('connection',(client) => {
     console.log('client disconnected');
   });
   client.on('data', (data) => {
-    console.log(JSON.stringify(data));
+    // console.log(JSON.stringify(data));
     if(data.type == 'move') robot.moveMouse(data.x,data.y);
     if(data.type == 'button') robot.mouseToggle(data.state,data.button);
+    if(data.type == 'scroll') robot.scrollMouse(data.x,data.y);
     // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
     // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
   });
