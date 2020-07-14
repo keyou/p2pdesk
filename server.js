@@ -4,6 +4,7 @@ var robot = require('robotjs');
 var jot = require('json-over-tcp');
 
 robot.setMouseDelay(0);
+robot.setKeyboardDelay(0);
 
 const server = jot.createServer();
 
@@ -21,7 +22,11 @@ server.on('connection',(client) => {
     if(data.type == 'move') robot.moveMouse(data.x,data.y);
     if(data.type == 'button') robot.mouseToggle(data.state,data.button);
     if(data.type == 'scroll') robot.scrollMouse(data.x,data.y);
-    if(data.type == 'keyboard') robot.keyToggle(data.key,data.state,data.modifier);
+    if(data.type == 'keyboard') {
+      if(String(data.modifier).length > 0)
+        robot.keyToggle(data.key,data.state,data.modifier);
+      else robot.keyToggle(data.key,data.state);
+    }
     // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
     // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
   });

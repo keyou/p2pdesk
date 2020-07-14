@@ -150,7 +150,7 @@ function crateWindow() {
             type: 'keyboard',
             key: name,
             state: ev.name == 'KeyPress' ? 'down' : 'up',
-            modifier: Modifiers[ev.buttons]
+            modifier: Modifiers[ev.buttons]?'':''
           };
           console.log(JSON.stringify(data));
           client.write(data);
