@@ -12,10 +12,14 @@ const server = net.createServer((client) => {
   client.on('end', () => {
     console.log('client disconnected');
   });
-  client.on('data', (data) => {
-    console.log(data.toString());
-    let d = JSON.parse(data.toString());
-    robot.moveMouse(d.x,d.y);
+  client.on('data', (chunk) => {
+    console.log(chunk.toString());
+    let data = JSON.parse(chunk.toString());
+    if(data.type == 'move') {robot.moveMouse(data.x,data.y);
+    if(data.type == 'button') robot.mouseToggle(data.state,data.button);
+    // if(data.type == 'click') robot.mouseClick(data.button,data.x,data.y);
+    // if(data.type == 'drag') robot.dragMouse(data.x,data.y);
+    
     // x11_node.mouseMove(d.x, d.y);
     // x11_node.mouseMove(200, 500);
     // x11_node.mouseButton(1,false);

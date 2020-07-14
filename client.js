@@ -14,6 +14,9 @@ client.on('data', (data) => {
 client.on('end', () => {
   console.log('disconnected from server');
 });
+client.on('error', (err) => {
+  console.error(err);
+});
 
 function onConnection() {
   // 'connect' listener.
@@ -21,20 +24,23 @@ function onConnection() {
   //   client.write('world!\r\n');
 
 
-  var Exposure = x11.eventMask.Exposure;
-  var PointerMotion = x11.eventMask.PointerMotion;
-
   x11.createClient(function (err, display) {
     var X = display.client;
     var root = display.screen[0].root;
     var wid = X.AllocID();
-    var w = 192 * 2;
-    var h = 108 * 2;
+    var w = 192 * 3;
+    var h = 108 * 3;
     X.CreateWindow(
       wid, root,        // new window id, parent
       0, 0, w, h,   // x, y, w, h
       0, 0, 0, 0,       // border, depth, class, visual
-      { eventMask: Exposure | PointerMotion } // other parameters
+      {
+        eventMask:
+          x11.eventMask.Exposure |
+          x11.eventMask.PointerMotion |
+          x11.eventMask.ButtonPress |
+          x11.eventMask.ButtonRelease
+      } // other parameters
     );
     X.MapWindow(wid);
 
@@ -45,7 +51,7 @@ function onConnection() {
 
     var mpid;
     X.on('event', function (ev) {
-      console.log("event: ", ev);
+      // console.log("event: ", ev);
       try {
         if (ev.name == 'CreateNotify')
           mpid = ev.wid;
@@ -53,8 +59,18 @@ function onConnection() {
           X.ResizeWindow(mpid, ev.width, ev.height);
         }
         if (ev.name == 'MotionNotify' && ev.wid == wid) {
-          console.log('x,y= ' + ev.x + "," + ev.y);
-          client.write(JSON.stringify({type:'move',x:ev.x * 1920 / w, y:ev.y * 1080 / h}));
+          let data = JSON.stringify({ type: 'move', x: ev.x * 1920 / w, y: ev.y * 1080 / h });
+          console.log(data);
+          // client.write(data);
+        }
+        if ((ev.name == 'ButtonPress' || ev.name == 'ButtonRelease') && (ev.keycode >= 1 || ev.keycode <= 3)) {
+          let data = JSON.stringify({ 
+            type: 'button', 
+            button: ev.keycode == 1? 'left':ev.keycode == 2?'middle':'right',
+            state: ev.name == 'ButtonPress'?'down':'up',
+            x: ev.x * 1920 / w, 
+            y: ev.y * 1080 / h });
+          console.log(data);
         }
       } catch (err) {
         console.log("error: ", err);
@@ -63,3 +79,5 @@ function onConnection() {
     });
   });
 }
+
+onConnection();

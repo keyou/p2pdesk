@@ -9,7 +9,6 @@
   "author": "keyou",
   "license": "MIT",
   "dependencies": {
-    "node-x11": "^1.0.4",
     "robotjs": "^0.6.0",
     "x11": "^2.3.0"
   }
