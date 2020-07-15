@@ -5,7 +5,9 @@ var keysym = require('keysym');
 
 var spawn = require('child_process').spawn;
 
-console.log("connecting to: tcp://"+process.argv[2]+':13334')
+let ip = process.argv[2];
+
+console.log("connecting to: tcp://"+ip+':13334')
 
 var client = jot.createConnection({ host: process.argv[2], port: 13334 }, function () {
   console.log('connected to server!');
@@ -122,7 +124,7 @@ function crateWindow() {
       '--autofit-larger=' + 192 * 7, // 当画面卡顿时将该值改小
       '--no-keepaspect', // 禁用会导致渲染性能损失
       '--no-keepaspect-window',
-      'tcp://192.168.78.132:13333'];
+      'tcp://'+ip+':13333'];
     console.log('mpv args:', args);
 
     // mpv --show-profile=libmpv
