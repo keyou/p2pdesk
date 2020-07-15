@@ -14,7 +14,7 @@ var client = jot.createConnection({ host: process.argv[2], port: 13334 }, functi
 });
 
 client.on('end', () => {
-  console.log("client disconnected");
+  console.log("socket disconnected");
   process.exit(-1);
 });
 
