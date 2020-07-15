@@ -81,6 +81,13 @@ var args = [
 console.log("ffmpeg args:", args);
 var ffmpeg = spawn('ffmpeg', args, { stdio: 'inherit' });
 
+var respawn = child => {
+  child.on("exit",(code)=>{
+    console.log('ffmpeg exit: '+code);
+    respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
+  });
+};
+respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
 
 return;
 var Exposure = x11.eventMask.Exposure;
