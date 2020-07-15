@@ -79,7 +79,6 @@ var args = [
   'tcp://0.0.0.0:13333?tcp_nodelay'
 ];
 console.log("ffmpeg args:", args);
-var ffmpeg = spawn('ffmpeg', args, { stdio: 'inherit' });
 
 var max_times = 5;
 var respawn = child => {

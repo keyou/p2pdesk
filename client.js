@@ -10,15 +10,16 @@ var client = jot.createConnection({ host: '192.168.78.132', port: 13334 }, funct
 });
 
 client.on('end', () => {
-  console.log("disconnected");
+  console.log("jot disconnected");
 });
 
 client.on('error', (err) => {
-  console.log(err);
+  console.log('jot error',err);
+  process.exit(-1);
 });
 
 client.on('data', function (data) {
-  console.log("data: " + JSON.stringify(data));
+  console.log("jot data: " + JSON.stringify(data));
 });
 
 var ks = x11.keySyms;
