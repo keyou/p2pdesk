@@ -5,22 +5,24 @@ var keysym = require('keysym');
 
 var spawn = require('child_process').spawn;
 
-var client = jot.createConnection({ host: '192.168.78.132', port: 13334 }, function () {
+console.log("connecting to: tcp://"+process.argv[2]+':13334')
+
+var client = jot.createConnection({ host: process.argv[2], port: 13334 }, function () {
   console.log('connected to server!');
 });
 
 client.on('end', () => {
-  console.log("jot disconnected");
-  process.exit('jot exit.');
+  console.log("client disconnected");
+  process.exit(-1);
 });
 
 client.on('error', (err) => {
-  console.log('jot error',err);
+  console.log('socket error:', err);
   process.exit(-1);
 });
 
 client.on('data', function (data) {
-  console.log("jot data: " + JSON.stringify(data));
+  console.log("socket receive: " + JSON.stringify(data));
 });
 
 var ks = x11.keySyms;
@@ -117,20 +119,20 @@ function crateWindow() {
       '--load-stats-overlay=yes',
       '--vo=gpu',
       '--cursor-autohide=no',
-      '--autofit-larger='+192*7, // 当画面卡顿时将该值改小
+      '--autofit-larger=' + 192 * 7, // 当画面卡顿时将该值改小
       '--no-keepaspect', // 禁用会导致渲染性能损失
       '--no-keepaspect-window',
       'tcp://192.168.78.132:13333'];
-    console.log('mpv args:',args);
+    console.log('mpv args:', args);
 
     // mpv --show-profile=libmpv
     // mpv --show-profile=low-latency
     // mpv --wid=106954753 --no-cache --untimed --no-demuxer-thread --vd-lavc-threads=1 tcp://192.168.78.132:13333 --no-input-cursor --no-input-default-bindings --no-config --input-vo-keyboard=no
     var player = spawn('mpv', args, { stdio: 'inherit' });
-    player.on('exit',(code)=>{
-      process.exit('mpv exit: '+code);
+    player.on('exit', (code) => {
+      process.exit('mpv exit: ' + code);
     });
-    
+
     var X = display.client;
     var min = display.min_keycode;
     var max = display.max_keycode;

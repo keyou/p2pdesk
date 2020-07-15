@@ -1,5 +1,4 @@
 
-var x11 = require('x11');
 var robot = require('robotjs');
 var jot = require('json-over-tcp');
 
@@ -40,7 +39,10 @@ server.on('connection', (client) => {
 });
 
 server.listen(13334, () => {
-  console.log('server start');
+  setTimeout(() => {  
+    console.log('server start.');
+    console.log('server listen at: tcp://0.0.0.0:13334');
+  }, 1000);
 });
 
 // ffmpeg -f x11grab -s 1920x1080 -framerate 30 -i :0.0 -preset ultrafast -pix_fmt yuv420p -vcodec libx264 -tune zerolatency -b:v 900k -threads 1 -g 120 -listen 1 -fflags nobuffer -f h264 tcp://0.0.0.0:13333?tcp_nodelay
@@ -50,25 +52,25 @@ var args = [
   '-f',
   'x11grab',
   // '-s','1280x720',
-  '-s','1920x1080',
-  '-i',':0.0',
-  '-framerate','30',
-  '-vsync','1', // for 'Past duration * too large'
-  '-draw_mouse','1',
+  '-s', '1920x1080',
+  '-i', ':0.0',
+  '-framerate', '30',
+  '-vsync', '1', // for 'Past duration * too large'
+  '-draw_mouse', '1',
   // '-show_region','1',
-  '-preset','ultrafast',
-  '-pix_fmt','yuv420p',
+  '-preset', 'ultrafast',
+  '-pix_fmt', 'yuv420p',
   // '-pix_fmt','+gray',
   // '-codec:v','libx264',
-  '-codec:v','libx265',
-  '-tune','zerolatency',
-  '-b:v','900k',
-  '-threads','1',
+  '-codec:v', 'libx265',
+  '-tune', 'zerolatency',
+  '-b:v', '900k',
+  '-threads', '1',
   // '-g','120',
-  '-listen','1',
-  '-fflags','nobuffer',
+  '-listen', '1',
+  '-fflags', 'nobuffer',
   '-nostdin',
-  '-f','mpegts',
+  '-f', 'mpegts',
   // '-f','hevc', // 使用该格式会导致起播很慢
   'tcp://0.0.0.0:13333?tcp_nodelay'
   // 'pipe:1'
@@ -76,8 +78,8 @@ var args = [
 console.log("ffmpeg args:", args);
 
 var respawn = child => {
-  child.on("exit",(code)=>{
-    console.error('ffmpeg exit: '+code);
+  child.on("exit", (code) => {
+    console.error('ffmpeg exit: ' + code);
     setTimeout(() => {
       console.error('ffmpeg respawn.');
       respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
@@ -85,34 +87,3 @@ var respawn = child => {
   });
 };
 respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
-
-return;
-var Exposure = x11.eventMask.Exposure;
-var PointerMotion = x11.eventMask.PointerMotion;
-
-x11.createClient(function (err, display) {
-  if (!err) {
-    var X = display.client;
-    var root = display.screen[0].root;
-    var wid = X.AllocID();
-    X.CreateWindow(
-      wid, root,        // new window id, parent
-      0, 0, 100, 100,   // x, y, w, h
-      0, 0, 0, 0,       // border, depth, class, visual
-      { eventMask: Exposure | PointerMotion } // other parameters
-    );
-    X.MapWindow(wid);
-    var gc = X.AllocID();
-    X.CreateGC(gc, wid);
-    X.on('event', function (ev) {
-      if (ev.type == 12) {
-        X.PolyText8(wid, gc, 50, 50, ['Hello, Node.JS!']);
-      }
-    });
-    X.on('error', function (e) {
-      console.log(e);
-    });
-  } else {
-    console.log(err);
-  }
-});
