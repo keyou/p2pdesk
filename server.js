@@ -81,10 +81,19 @@ var args = [
 console.log("ffmpeg args:", args);
 var ffmpeg = spawn('ffmpeg', args, { stdio: 'inherit' });
 
+var max_times = 5;
 var respawn = child => {
+  max_times--;
+  if(max_times < 0) {
+    console.error("reach max respawn times.");
+    process.exit(-1);
+  }
   child.on("exit",(code)=>{
-    console.log('ffmpeg exit: '+code);
-    respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
+    console.error('ffmpeg exit: '+code);
+    setTimeout(() => {
+      console.error('ffmpeg respawn.',5-max_times);
+      respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
+    }, 3000);
   });
 };
 respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
