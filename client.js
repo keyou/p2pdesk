@@ -115,7 +115,10 @@ function crateWindow() {
       // '--fps=30',
       '--load-stats-overlay=yes',
       '--vo=gpu',
-      '--autofit=10%x10%',
+      '--autofit-larger='+192*6,
+      '--cursor-autohide=no',
+      '--no-keepaspect', // 禁用会导致渲染性能损失
+      '--no-keepaspect-window',
       'tcp://192.168.78.132:13333'];
     console.log('mpv args:',args);
 
