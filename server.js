@@ -10,7 +10,8 @@ robot.setKeyboardDelay(1);
 const server = jot.createServer();
 
 server.on('error', (err) => {
-  throw err;
+  console.log("error: "+ err);
+  process.exit(-1);
 });
 
 server.on('connection', (client) => {
@@ -41,8 +42,8 @@ server.on('connection', (client) => {
 server.listen(13334, () => {
   setTimeout(() => {  
     console.log('server start.');
-    console.log('server listen at: tcp://0.0.0.0:13334');
-  }, 1000);
+    console.log('listen at: tcp://0.0.0.0:13334');
+  }, 500);
 });
 
 // ffmpeg -f x11grab -s 1920x1080 -framerate 30 -i :0.0 -preset ultrafast -pix_fmt yuv420p -vcodec libx264 -tune zerolatency -b:v 900k -threads 1 -g 120 -listen 1 -fflags nobuffer -f h264 tcp://0.0.0.0:13333?tcp_nodelay
@@ -83,7 +84,7 @@ var respawn = child => {
     setTimeout(() => {
       console.error('ffmpeg respawn.');
       respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
-    }, 3000);
+    }, 2000);
   });
 };
 respawn(spawn('ffmpeg', args, { stdio: 'inherit' }));
