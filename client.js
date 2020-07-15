@@ -24,22 +24,22 @@ client.on('data', function (data) {
 var ks = x11.keySyms;
 var ks2Name = {};
 for (var key in ks)
-    ks2Name[ ks[key].code ] = key;
+  ks2Name[ks[key].code] = key;
 var kk2Name = {};
 
 var Modifiers = {
-  17:'shift',
-  1:'shift',
-  20:'control',
-  4:'control',
-  24:'alt',
-  8:'alt',
-  21:['shift','control'],
-  5:['shift','control'],
-  25:['shift','alt'],
-  9:['shift','alt'],
-  28:['control','alt'],
-  12:['control','alt'],
+  17: 'shift',
+  1: 'shift',
+  20: 'control',
+  4: 'control',
+  24: 'alt',
+  8: 'alt',
+  21: ['shift', 'control'],
+  5: ['shift', 'control'],
+  25: ['shift', 'alt'],
+  9: ['shift', 'alt'],
+  28: ['control', 'alt'],
+  12: ['control', 'alt'],
 };
 
 var KeyMaps = {
@@ -49,26 +49,26 @@ var KeyMaps = {
   num_lock: '',
   caps_lock: '',
   grave: '`',
-  comma:',',
-  less:',',
-  period:'.',
-  greater:'.',
-  slash:'/',
-  question:'/',
-  semicolon:';',
-  colon:';',
-  apostrophe:'\'',
-  quotedbl:'\'',
-  backslash:'\\',
-  bar:'\\',
-  bracketleft:'[',
-  braceleft:'[',
-  bracketright:']',
-  braceright:']',
-  minus:'-',
-  underscore:'-',
-  equal:'=',
-  plus:'=',
+  comma: ',',
+  less: ',',
+  period: '.',
+  greater: '.',
+  slash: '/',
+  question: '/',
+  semicolon: ';',
+  colon: ';',
+  apostrophe: '\'',
+  quotedbl: '\'',
+  backslash: '\\',
+  bar: '\\',
+  bracketleft: '[',
+  braceleft: '[',
+  bracketright: ']',
+  braceright: ']',
+  minus: '-',
+  underscore: '-',
+  equal: '=',
+  plus: '=',
 };
 
 function crateWindow() {
@@ -96,18 +96,21 @@ function crateWindow() {
     );
     X.MapWindow(wid);
     console.log('wid: ', wid);
+    var args = [
+      '--wid=' + wid,
+      '--profile=low-latency',
+      '--no-config',
+      '--no-input-default-bindings',
+      '--no-input-cursor',
+      '--no-osd-bar',
+      '--no-cache',
+      '--untimed',
+      '--no-correct-pts',
+      // '--fps=30',
+      'tcp://192.168.78.132:13333'];
+
     // mpv --wid=106954753 --no-cache --untimed --no-demuxer-thread --vd-lavc-threads=1 tcp://192.168.78.132:13333 --no-input-cursor --no-input-default-bindings --no-config --input-vo-keyboard=no
-    // var mplayer = spawn('mpv', [
-    //   '--wid', wid,
-    //   '--no-config',
-    //   '--no-input-default-bindings',
-    //   '--no-input-cursor',
-    //   '--no-osd-bar', 
-    //   '--no-cache',
-    //   '--untimed',
-    //   '--no-demuxer-thread',
-    //   '--vd-lavc-threads=1',
-    //   'tcp://192.168.78.132:13333']);
+    var player = spawn('mpv', args, { stdio: ['ignore', 'inherit', 'inherit'] });
 
     var X = display.client;
     var min = display.min_keycode;
@@ -169,17 +172,17 @@ function crateWindow() {
           var control = ev.buttons == 20;
           var alt = ev.buttons == 24;
           let name = '';
-          if(keySyms) {
+          if (keySyms) {
             var code = keysym.fromKeysym(keySyms[shift ? 1 : 0][1]);
-            if(code === undefined) {
+            if (code === undefined) {
               code = keysym.fromKeysym(keySyms[0][1]);
             }
-            if(code) {
-              name = code.names[0].toLowerCase().replace(/_l$|_r$/,'');
+            if (code) {
+              name = code.names[0].toLowerCase().replace(/_l$|_r$/, '');
             }
-            if(KeyMaps[name]!=undefined) name = KeyMaps[name];
+            if (KeyMaps[name] != undefined) name = KeyMaps[name];
           }
-          if(name.length <=0) return;
+          if (name.length <= 0) return;
           let data = {
             type: 'keyboard',
             key: name,

@@ -51,6 +51,7 @@ var ffmpeg = spawn('ffmpeg', [
   '-f',
   'x11grab',
   '-s',
+  //'1280x720',
   '1920x1080',
   '-framerate',
   '30',
@@ -75,7 +76,7 @@ var ffmpeg = spawn('ffmpeg', [
   '-fflags',
   'nobuffer',
   '-f',
-  'h264',
+  'mpegts',
   'tcp://0.0.0.0:13333?tcp_nodelay'
 ]);
 
