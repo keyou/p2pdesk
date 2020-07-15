@@ -67,8 +67,8 @@ var args = [
   '-listen','1',
   '-fflags','nobuffer',
   '-nostdin',
-  // '-f','mpegts',
-  '-f','hevc',
+  '-f','mpegts',
+  // '-f','hevc', // 使用该格式会导致起播很慢
   'tcp://0.0.0.0:13333?tcp_nodelay'
   // 'pipe:1'
 ];

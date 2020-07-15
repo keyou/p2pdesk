@@ -116,8 +116,8 @@ function crateWindow() {
       // '--fps=30',
       '--load-stats-overlay=yes',
       '--vo=gpu',
-      '--autofit-larger='+192*6,
       '--cursor-autohide=no',
+      '--autofit-larger='+192*7, // 当画面卡顿时将该值改小
       '--no-keepaspect', // 禁用会导致渲染性能损失
       '--no-keepaspect-window',
       'tcp://192.168.78.132:13333'];
