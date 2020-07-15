@@ -56,7 +56,8 @@ var args = [
   '-s', '1920x1080',
   '-i', ':0.0',
   '-framerate', '30',
-  '-vsync', '1', // for 'Past duration * too large'
+  '-crf','25', // 质量 1-51,越小质量越高，体积越大
+  // '-vsync', '1', // for 'Past duration * too large'，可能会导致起播慢
   '-draw_mouse', '1',
   // '-show_region','1',
   '-preset', 'ultrafast',
