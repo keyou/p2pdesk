@@ -99,18 +99,27 @@ function crateWindow() {
     var args = [
       '--wid=' + wid,
       '--profile=low-latency',
+      '--video-latency-hacks=yes',
       '--no-config',
-      '--no-input-default-bindings',
+      // '--no-input-default-bindings',
+      '--input-vo-keyboard=no',
+      // '--input-meida-keys=no',
       '--no-input-cursor',
-      '--no-osd-bar',
+      '--idle=yes',
+      '--osc=no', // On Screen Control
+      // '--no-osd-bar', // On Screen Display
       '--no-cache',
       '--untimed',
       '--no-correct-pts',
       // '--fps=30',
+      '--load-stats-overlay=yes',
       'tcp://192.168.78.132:13333'];
+    console.log('mpv args:',args);
 
+    // mpv --show-profile=libmpv
+    // mpv --show-profile=low-latency
     // mpv --wid=106954753 --no-cache --untimed --no-demuxer-thread --vd-lavc-threads=1 tcp://192.168.78.132:13333 --no-input-cursor --no-input-default-bindings --no-config --input-vo-keyboard=no
-    var player = spawn('mpv', args, { stdio: ['ignore', 'inherit', 'inherit'] });
+    var player = spawn('mpv', args, { stdio: 'inherit' });
 
     var X = display.client;
     var min = display.min_keycode;

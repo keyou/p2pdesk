@@ -46,8 +46,7 @@ server.listen(13334, () => {
 // ffmpeg -f x11grab -s 1920x1080 -framerate 30 -i :0.0 -preset ultrafast -pix_fmt yuv420p -vcodec libx264 -tune zerolatency -b:v 900k -threads 1 -g 120 -listen 1 -fflags nobuffer -f h264 tcp://0.0.0.0:13333?tcp_nodelay
 
 
-
-var ffmpeg = spawn('ffmpeg', [
+var args = [
   '-f',
   'x11grab',
   '-s',
@@ -78,7 +77,10 @@ var ffmpeg = spawn('ffmpeg', [
   '-f',
   'mpegts',
   'tcp://0.0.0.0:13333?tcp_nodelay'
-]);
+];
+console.log("ffmpeg args:", args);
+var ffmpeg = spawn('ffmpeg', args, { stdio: 'inherit' });
+
 
 return;
 var Exposure = x11.eventMask.Exposure;
