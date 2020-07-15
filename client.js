@@ -11,6 +11,7 @@ var client = jot.createConnection({ host: '192.168.78.132', port: 13334 }, funct
 
 client.on('end', () => {
   console.log("jot disconnected");
+  process.exit('jot exit.');
 });
 
 client.on('error', (err) => {
