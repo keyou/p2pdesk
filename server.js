@@ -53,6 +53,7 @@ var args = [
   '-s','1920x1080',
   '-i',':0.0',
   '-framerate','30',
+  '-vsync','1', // for 'Past duration * too large'
   '-draw_mouse','1',
   // '-show_region','1',
   '-preset','ultrafast',
