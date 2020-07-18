@@ -129,7 +129,7 @@ function crateWindow() {
       '--no-correct-pts',
       // '--fps=30',
       '--load-stats-overlay=yes',
-      '--vo=gpu',
+      //'--vo=gpu',
       '--cursor-autohide=no',
       '--autofit-larger=' + 192 * 7, // 当画面卡顿时将该值改小
       '--no-keepaspect', // 禁用会导致渲染性能损失
