@@ -1,6 +1,6 @@
 
 var x11 = require('x11');
-var jot = require('json-over-tcp');
+var jot = require('net');
 var keysym = require('keysym');
 
 var spawn = require('child_process').spawn;
@@ -11,8 +11,12 @@ let screen_height= 1080;
 
 console.log("connecting to: tcp://"+ip+':13334')
 
-var client = jot.createConnection({ host: process.argv[2], port: 13334 }, function () {
+var client = jot.createConnection({ host: ip, port: 13334 }, function () {
   console.log('connected to server!');
+  // sendCommand({a:'aaaa',b:'bbbb',c:1,d:true});
+  // sendCommand({a:'aaaa',b:'bbbb',c:2,d:true});
+  // sendCommand({a:'aaaa',b:'bbbb',c:3,d:true});
+  // sendCommand({a:'aaaa',b:'bbbb',c:4,d:true});
 });
 
 client.on('end', () => {
@@ -26,8 +30,12 @@ client.on('error', (err) => {
 });
 
 client.on('data', function (data) {
-  console.log("socket receive: " + JSON.stringify(data));
+  console.log("socket receive: " + data.toString());
 });
+
+function sendCommand(data) {
+  client.write(JSON.stringify(data)+'\n');
+}
 
 var ks = x11.keySyms;
 var ks2Name = {};
@@ -166,7 +174,7 @@ function crateWindow() {
         if (ev.name == 'MotionNotify' && ev.wid == wid) {
           let data = { type: 'move', x: ev.x * screen_with / w, y: ev.y * screen_height / h };
           // console.log(JSON.stringify(data));
-          client.write(data);
+          sendCommand(data);
         }
         if ((ev.name == 'ButtonPress' || ev.name == 'ButtonRelease') && (ev.keycode >= 1 && ev.keycode <= 3)) {
           let data = {
@@ -177,7 +185,7 @@ function crateWindow() {
             y: Math.round(ev.y * 1080 / h)
           };
           console.log(JSON.stringify(data));
-          client.write(data);
+          sendCommand(data);
         }
         if ((ev.name == 'ButtonPress') && (ev.keycode >= 4 && ev.keycode <= 5)) {
           let data = {
@@ -188,7 +196,7 @@ function crateWindow() {
             y: ev.keycode == 4 ? '5' : '-5'
           };
           console.log(JSON.stringify(data));
-          client.write(data);
+          sendCommand(data);
         }
         if (ev.name == 'KeyPress' || ev.name == 'KeyRelease') {
           var keySyms = kk2Name[ev.keycode];
@@ -215,7 +223,7 @@ function crateWindow() {
             modifier: Modifiers[ev.buttons]
           };
           console.log(JSON.stringify(data));
-          client.write(data);
+          sendCommand(data);
         }
       } catch (err) {
         console.log("error: ", err);
