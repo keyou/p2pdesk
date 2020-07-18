@@ -17,10 +17,13 @@ server.on('error', (err) => {
 
 server.on('connection', (client) => {
   console.log('client connected');
-  client.write("2222222");
   client.on('end', () => {
     console.log('client disconnected');
   });
+  client.on('error',err=>{
+    console.log('client error: '+err);
+  });
+  client.write(`${screen_with}x${screen_height}`);
   client.on('data', (data) => {
     try {
         parseData(data,cmd=>{
