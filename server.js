@@ -64,7 +64,7 @@ function parseData(data,callback) {
   commands = commands.slice(0,commands.length-1);
   commands.forEach(callback);
 }
-return;
+
 // ffmpeg -f x11grab -s 1920x1080 -framerate 30 -i :0.0 -preset ultrafast -pix_fmt yuv420p -vcodec libx264 -tune zerolatency -b:v 900k -threads 1 -g 120 -listen 1 -fflags nobuffer -f h264 tcp://0.0.0.0:13333?tcp_nodelay
 
 var args = [
