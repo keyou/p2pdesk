@@ -2,9 +2,6 @@
 var robot = require('robotjs');
 var jot = require('net');
 var spawn = require('child_process').spawn;
-var ff = require('ffmpeg');
-
-console.log(ff);
 
 robot.setMouseDelay(1);
 robot.setKeyboardDelay(1);
@@ -67,12 +64,18 @@ function parseData(data,callback) {
 
 // ffmpeg -f x11grab -s 1920x1080 -framerate 30 -i :0.0 -preset ultrafast -pix_fmt yuv420p -vcodec libx264 -tune zerolatency -b:v 900k -threads 1 -g 120 -listen 1 -fflags nobuffer -f h264 tcp://0.0.0.0:13333?tcp_nodelay
 
+var device = 'x11grab';
+var input = ':0.0';
+if(process.platform == 'win32') {
+  device = 'gdigrab';
+  input = 'desktop';
+}
+
 var args = [
-  '-f',
-  'x11grab',
+  '-f', device,
+  '-i', input,
   // '-s','1280x720',
   '-s', `${screen_with}x${screen_height}`,
-  '-i', ':0.0',
   '-framerate', '30',
   '-crf','45', // 质量 1-51,越小质量越高，体积越大
   // '-vsync', '1', // for 'Past duration * too large'，可能会导致起播慢
