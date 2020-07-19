@@ -73,11 +73,11 @@ if(process.platform == 'win32') {
 
 var args = [
   '-f', device,
-  '-i', input,
   // '-s','1280x720',
   '-s', `${screen_with}x${screen_height}`,
+  '-i', input,
   '-framerate', '30',
-  '-crf','45', // 质量 1-51,越小质量越高，体积越大
+  '-crf','25', // 质量 1-51,越小质量越高，体积越大
   // '-vsync', '1', // for 'Past duration * too large'，可能会导致起播慢
   '-draw_mouse', '1',
   // '-show_region','1',
